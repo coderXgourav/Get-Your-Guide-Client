@@ -98,8 +98,8 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <PageMeta
-        title="Tour & Event Management Dashboard"
-        description="Admin dashboard for tour and event management system"
+        title="Dashboard | Get Your Guide Admin"
+        description="Admin dashboard for Get Your Guide tour management system"
       />
       <PageBreadcrumb pageTitle="Dashboard" />
       

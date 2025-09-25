@@ -87,7 +87,7 @@ export default function ViewBuses() {
   return (
     <div>
       <PageMeta
-        title="View Buses | Bus Management"
+        title="View Buses | Get Your Guide Admin"
         description="View and manage all buses"
       />
       <PageBreadcrumb pageTitle="View Buses" />

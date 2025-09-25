@@ -58,7 +58,7 @@ export default function AddBus() {
   return (
     <div>
       <PageMeta
-        title="Add Bus | Bus Management"
+        title="Add Bus | Get Your Guide Admin"
         description="Register new bus to the fleet"
       />
       <PageBreadcrumb pageTitle="Add Bus" />
