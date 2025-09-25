@@ -21,13 +21,13 @@ export default function AuthLayout({
                 <img
                   width={231}
                   height={48}
-                  src="/images/logo/auth-logo.png"
+                  src="/images/logo/logo-dark.png"
                   alt="Logo"
                 />
               </Link>
-              <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
-              </p>
+                <p className="text-center text-gray-400 dark:text-white/60">
+                  Sign in to access your dashboard, manage bookings, and discover exclusive offers.
+                </p>
             </div>
           </div>
         </div>
