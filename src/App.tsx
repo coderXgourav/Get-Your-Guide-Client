@@ -18,12 +18,10 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import AddDriver from "./pages/Driver/AddDriver";
-import ViewDriver from "./pages/Driver/ViewDriver";
 import AddBus from "./pages/Bus/AddBus";
 import ViewBuses from "./pages/Bus/ViewBuses";
-import AddSupplier from "./pages/Supplier/AddSupplier";
-import ViewSupplier from "./pages/Supplier/ViewSupplier";
+import AddRole from "./pages/Role/AddRole";
+import ViewRole from "./pages/Role/ViewRole";
 import AddTour from "./pages/Tour/AddTour";
 import ViewTour from "./pages/Tour/ViewTour";
 
@@ -61,17 +59,13 @@ export default function App() {
             <Route path="line-chart" element={<LineChart />} />
             <Route path="bar-chart" element={<BarChart />} />
 
-            {/* Driver Management */}
-            <Route path="add-driver" element={<AddDriver />} />
-            <Route path="view-driver" element={<ViewDriver />} />
+            {/* Role Management */}
+            <Route path="add-role" element={<AddRole />} />
+            <Route path="view-role" element={<ViewRole />} />
 
             {/* Bus Management */}
             <Route path="add-bus" element={<AddBus />} />
             <Route path="view-buses" element={<ViewBuses />} />
-
-            {/* Supplier Management */}
-            <Route path="add-supplier" element={<AddSupplier />} />
-            <Route path="view-supplier" element={<ViewSupplier />} />
 
             {/* Tour Management */}
             <Route path="add-tour" element={<AddTour />} />

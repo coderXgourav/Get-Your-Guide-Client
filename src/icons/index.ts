@@ -20,6 +20,7 @@ import { ReactComponent as BoxIconLine } from "./box-line.svg?react";
 import { ReactComponent as ShootingStarIcon } from "./shooting-star.svg?react";
 import { ReactComponent as DollarLineIcon } from "./dollar-line.svg?react";
 import { ReactComponent as TrashBinIcon } from "./trash.svg?react";
+import { ReactComponent as TrashIcon } from "./trash.svg?react";
 import { ReactComponent as AngleUpIcon } from "./angle-up.svg?react";
 import { ReactComponent as AngleDownIcon } from "./angle-down.svg?react";
 import { ReactComponent as AngleLeftIcon } from "./angle-left.svg?react";
@@ -81,6 +82,7 @@ export {
   ShootingStarIcon,
   DollarLineIcon,
   TrashBinIcon,
+  TrashIcon,
   AngleUpIcon,
   AngleDownIcon,
   PencilIcon,

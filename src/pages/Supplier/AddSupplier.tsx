@@ -87,7 +87,6 @@ export default function AddSupplier() {
                 value={formData.companyName}
                 onChange={handleInputChange}
                 placeholder="Enter company name"
-                required
               />
             </div>
 
@@ -100,7 +99,6 @@ export default function AddSupplier() {
                 value={formData.contactPerson}
                 onChange={handleInputChange}
                 placeholder="Enter contact person name"
-                required
               />
             </div>
 
@@ -113,7 +111,6 @@ export default function AddSupplier() {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="company@example.com"
-                required
               />
             </div>
 
@@ -126,7 +123,6 @@ export default function AddSupplier() {
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="+1 (555) 123-4567"
-                required
               />
             </div>
 
@@ -139,7 +135,6 @@ export default function AddSupplier() {
                 value={formData.address}
                 onChange={handleInputChange}
                 placeholder="Enter complete address"
-                required
               />
             </div>
 
@@ -152,7 +147,6 @@ export default function AddSupplier() {
                 value={formData.city}
                 onChange={handleInputChange}
                 placeholder="Enter city"
-                required
               />
             </div>
 
@@ -165,7 +159,6 @@ export default function AddSupplier() {
                 value={formData.state}
                 onChange={handleInputChange}
                 placeholder="Enter state"
-                required
               />
             </div>
 
@@ -178,7 +171,6 @@ export default function AddSupplier() {
                 value={formData.pincode}
                 onChange={handleInputChange}
                 placeholder="123456"
-                required
               />
             </div>
 

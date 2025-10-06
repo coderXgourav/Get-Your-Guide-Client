@@ -9,12 +9,17 @@ import { PlusIcon } from "../../icons";
 
 export default function AddBus() {
   const [formData, setFormData] = useState({
-    busNumber: "",
+    busRegNo: "",
     model: "",
     manufacturer: "",
     year: "",
     capacity: "",
     fuelType: "",
+    regExDate: "",
+    insuranceNo: "",
+    insuranceCompany: "",
+    exDate: "",
+    vinNo: "",
     image: null as File | null,
   });
 
@@ -108,15 +113,14 @@ export default function AddBus() {
 
             {/* Basic Information */}
             <div>
-              <Label htmlFor="busNumber">Bus Number *</Label>
+              <Label htmlFor="busRegNo">Bus Reg. No *</Label>
               <Input
                 type="text"
-                id="busNumber"
-                name="busNumber"
-                value={formData.busNumber}
+                id="busRegNo"
+                name="busRegNo"
+                value={formData.busRegNo}
                 onChange={handleInputChange}
                 placeholder="BUS-001"
-                required
               />
             </div>
 
@@ -129,7 +133,6 @@ export default function AddBus() {
                 value={formData.manufacturer}
                 onChange={handleInputChange}
                 placeholder="Tata Motors"
-                required
               />
             </div>
 
@@ -142,7 +145,6 @@ export default function AddBus() {
                 value={formData.model}
                 onChange={handleInputChange}
                 placeholder="Starbus Ultra"
-                required
               />
             </div>
 
@@ -157,7 +159,6 @@ export default function AddBus() {
                 placeholder="2023"
                 min="1990"
                 max="2024"
-                required
               />
             </div>
 
@@ -171,7 +172,6 @@ export default function AddBus() {
                 onChange={handleInputChange}
                 placeholder="45"
                 min="1"
-                required
               />
             </div>
 
@@ -182,6 +182,64 @@ export default function AddBus() {
                 placeholder="Select fuel type"
                 onChange={handleSelectChange}
                 className="dark:bg-gray-900"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="regExDate">Reg. Ex. Date *</Label>
+              <Input
+                type="date"
+                id="regExDate"
+                name="regExDate"
+                value={formData.regExDate}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="insuranceNo">Insurance No *</Label>
+              <Input
+                type="text"
+                id="insuranceNo"
+                name="insuranceNo"
+                value={formData.insuranceNo}
+                onChange={handleInputChange}
+                placeholder="Enter insurance number"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="insuranceCompany">Insurance Company *</Label>
+              <Input
+                type="text"
+                id="insuranceCompany"
+                name="insuranceCompany"
+                value={formData.insuranceCompany}
+                onChange={handleInputChange}
+                placeholder="Enter insurance company"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="exDate">Ex. Date *</Label>
+              <Input
+                type="date"
+                id="exDate"
+                name="exDate"
+                value={formData.exDate}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="vinNo">VIN No *</Label>
+              <Input
+                type="text"
+                id="vinNo"
+                name="vinNo"
+                value={formData.vinNo}
+                onChange={handleInputChange}
+                placeholder="Enter VIN number"
               />
             </div>
           </div>

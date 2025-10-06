@@ -121,7 +121,6 @@ export default function AddDriver() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Enter driver's full name"
-                required
               />
             </div>
 
@@ -134,7 +133,6 @@ export default function AddDriver() {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="driver@example.com"
-                required
               />
             </div>
 
@@ -147,7 +145,6 @@ export default function AddDriver() {
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="+1 (555) 123-4567"
-                required
               />
             </div>
 
@@ -160,7 +157,6 @@ export default function AddDriver() {
                 value={formData.licenseNumber}
                 onChange={handleInputChange}
                 placeholder="Enter license number"
-                required
               />
             </div>
 

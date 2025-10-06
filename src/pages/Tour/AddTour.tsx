@@ -50,22 +50,7 @@ interface FormData {
   options: any[];
 }
 
-interface BookingOption {
-  title: string;
-  languages: string[];
-  isPrivate: boolean;
-  skipLine: boolean;
-  wheelchairAccessible: boolean;
-  durationType: string;
-  duration: string;
-  meetingType: string;
-  meetingPoint: string;
-  meetingDescription: string;
-  arrivalTime: string;
-  availabilityType: string;
-  pricingType: string;
-  cutoffTime: string;
-}
+
 
 const steps = [
   { id: 1, name: "Product Category", key: "category" },
@@ -87,7 +72,7 @@ export default function AddTour() {
   const [optionStep, setOptionStep] = useState(1);
   const [currentOption, setCurrentOption] = useState({
     title: "",
-    languages: [],
+    languages: [] as string[],
     isPrivate: false,
     skipLine: false,
     wheelchairAccessible: false,
@@ -865,7 +850,7 @@ export default function AddTour() {
                         setOptionStep(1);
                         setCurrentOption({
                           title: "",
-                          languages: [],
+                          languages: [] as string[],
                           isPrivate: false,
                           skipLine: false,
                           wheelchairAccessible: false,
@@ -898,9 +883,9 @@ export default function AddTour() {
                         defaultValue=""
                       >
                         <option value="">Use existing as template</option>
-                        {formData.options.map((option, index) => (
+                        {formData.options.map((_, index) => (
                           <option key={index} value={index}>
-                            {option.title || `Option ${index + 1}`}
+                            {formData.options[index].title || `Option ${index + 1}`}
                           </option>
                         ))}
                       </select>
@@ -915,46 +900,35 @@ export default function AddTour() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {formData.options.map((option, index) => (
-                      <div key={index} className="p-4 border rounded-lg bg-gray-50">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h5 className="font-medium">{option.title || `Option ${index + 1}`}</h5>
-                            <p className="text-sm text-gray-600">
-                              {option.languages?.join(", ")} • {option.durationType === "duration" ? "Duration" : "Validity"} • {option.pricingType === "per-person" ? "Per Person" : "Per Group"}
-                            </p>
+                    {formData.options.map((_, index) => {
+                      const option = formData.options[index];
+                      return (
+                        <div key={index} className="p-4 border rounded-lg bg-gray-50">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h5 className="font-medium">{option.title || `Option ${index + 1}`}</h5>
+                              <p className="text-sm text-gray-600">
+                                {option.languages?.join(", ")} • {option.durationType === "duration" ? "Duration" : "Validity"} • {option.pricingType === "per-person" ? "Per Person" : "Per Group"}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  options: prev.options.filter((_, i) => i !== index)
+                                }));
+                              }}
+                              className="text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded"
+                            >
+                              Delete
+                            </button>
                           </div>
-                          <button
-                            onClick={() => {
-                              setFormData(prev => ({
-                                ...prev,
-                                options: prev.options.filter((_, i) => i !== index)
-                              }));
-                            }}
-                            className="text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded"
-                          >
-                            Delete
-                          </button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
-
-              {formData.options.length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="font-medium">Created Options:</h4>
-                  {formData.options.map((option, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-gray-50">
-                      <div className="flex justify-between items-center">
-                        <span>Option {index + 1}</span>
-                        <button className="text-red-600 hover:text-red-800">Delete</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         );

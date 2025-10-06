@@ -4,19 +4,12 @@ import { Link, useLocation } from "react-router";
 // Assume these icons are imported from an icon library
 import {
   BoxIcon ,
-  BoxCubeIcon,
   TaskIcon ,
   DollarLineIcon ,
-  GroupIcon ,
   CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
@@ -36,11 +29,11 @@ const navItems: NavItem[] = [
     path: "/admin",
   },
   {
-    name: "Driver Manage",
+    name: "Manage Role",
     icon: <UserCircleIcon />,
     subItems: [
-      { name: "Add Driver", path: "/admin/add-driver", pro: false },
-      { name: "View Driver", path: "/admin/view-driver", pro: false },
+      { name: "Add Role", path: "/admin/add-role", pro: false },
+      { name: "View Role", path: "/admin/view-role", pro: false },
     ],
   },
   {
@@ -68,14 +61,6 @@ const navItems: NavItem[] = [
     icon: <DollarLineIcon />,
     name: "Finance",
     path: "/admin/finance",
-  },
-  {
-    name: "Manage Supplier",
-    icon: <GroupIcon />,
-    subItems: [
-      { name: "Add Supplier", path: "/admin/add-supplier", pro: false },
-      { name: "View Supplier", path: "/admin/view-supplier", pro: false },
-    ],
   },
 ];
 
