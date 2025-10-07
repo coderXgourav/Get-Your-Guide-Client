@@ -24,6 +24,7 @@ import AddRole from "./pages/Role/AddRole";
 import ViewRole from "./pages/Role/ViewRole";
 import AddTour from "./pages/Tour/AddTour";
 import ViewTour from "./pages/Tour/ViewTour";
+import AllocateTour from "./pages/Tour/AllocateTour";
 
 export default function App() {
   return (
@@ -70,6 +71,7 @@ export default function App() {
             {/* Tour Management */}
             <Route path="add-tour" element={<AddTour />} />
             <Route path="view-tour" element={<ViewTour />} />
+            <Route path="tour-allocate" element={<AllocateTour />} />
           </Route>
 
           {/* Redirect root to admin */}

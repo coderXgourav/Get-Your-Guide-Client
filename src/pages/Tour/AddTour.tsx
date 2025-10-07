@@ -4,6 +4,10 @@ import PageMeta from "../../components/common/PageMeta";
 import { CheckCircleIcon, AlertIcon } from "../../icons";
 
 interface FormData {
+  // Tour Type
+  tourType: string;
+  duplicateFromId: string;
+  
   // Product Category
   productCategory: string;
   
@@ -43,8 +47,16 @@ interface FormData {
   emergencyContact: string;
   voucherInfo: string;
   
-  // Photos
+  // Media
   photos: File[];
+  videos: File[];
+  
+  // Pricing
+  adultPrice: string;
+  childPrice: string;
+  infantPrice: string;
+  groupPrice: string;
+  currency: string;
   
   // Options
   options: any[];
@@ -53,16 +65,18 @@ interface FormData {
 
 
 const steps = [
-  { id: 1, name: "Product Category", key: "category" },
-  { id: 2, name: "AI Content Creator", key: "ai" },
-  { id: 3, name: "Main Information", key: "main" },
-  { id: 4, name: "Locations", key: "locations" },
-  { id: 5, name: "Keywords", key: "keywords" },
-  { id: 6, name: "Inclusions", key: "inclusions" },
-  { id: 7, name: "Extra Information", key: "extra" },
-  { id: 8, name: "Photos", key: "photos" },
-  { id: 9, name: "Options", key: "options" },
-  { id: 10, name: "Review", key: "review" }
+  { id: 1, name: "Tour Type", key: "tourType" },
+  { id: 2, name: "Product Category", key: "category" },
+  { id: 3, name: "AI Content Creator", key: "ai" },
+  { id: 4, name: "Main Information", key: "main" },
+  { id: 5, name: "Locations", key: "locations" },
+  { id: 6, name: "Keywords", key: "keywords" },
+  { id: 7, name: "Inclusions", key: "inclusions" },
+  { id: 8, name: "Extra Information", key: "extra" },
+  { id: 9, name: "Media", key: "media" },
+  { id: 10, name: "Pricing", key: "pricing" },
+  { id: 11, name: "Options", key: "options" },
+  { id: 12, name: "Review", key: "review" }
 ];
 
 export default function AddTour() {
@@ -87,6 +101,8 @@ export default function AddTour() {
     cutoffTime: "2-hours"
   });
   const [formData, setFormData] = useState<FormData>({
+    tourType: "",
+    duplicateFromId: "",
     productCategory: "",
     useAI: false,
     aiContent: "",
@@ -113,6 +129,12 @@ export default function AddTour() {
     emergencyContact: "",
     voucherInfo: "",
     photos: [],
+    videos: [],
+    adultPrice: "",
+    childPrice: "",
+    infantPrice: "",
+    groupPrice: "",
+    currency: "USD",
     options: []
   });
 
@@ -131,23 +153,34 @@ export default function AddTour() {
 
     switch (step) {
       case 1:
+        if (!formData.tourType) {
+          newErrors.tourType = "Please select tour type";
+        }
+        if (formData.tourType === "duplicate" && !formData.duplicateFromId) {
+          newErrors.duplicateFromId = "Please select a tour to duplicate";
+        }
+        break;
+      case 2:
         if (!formData.productCategory) {
           newErrors.productCategory = "Please select a product category";
         }
         break;
-      case 3:
+      case 4:
         if (!formData.title) newErrors.title = "Title is required";
         if (!formData.shortDescription) newErrors.shortDescription = "Short description is required";
         if (!formData.fullDescription) newErrors.fullDescription = "Full description is required";
         if (formData.highlights.length < 3 || formData.highlights.some(h => !h.trim())) newErrors.highlights = "At least 3 highlights are required and cannot be empty";
         break;
-      case 4:
+      case 5:
         if (formData.locations.length === 0) newErrors.locations = "At least one location is required";
         break;
-      case 8:
+      case 9:
         if (formData.photos.length < 4) newErrors.photos = "At least 4 photos are required";
         break;
-      case 9:
+      case 10:
+        if (!formData.adultPrice) newErrors.adultPrice = "Adult price is required";
+        break;
+      case 11:
         if (formData.options.length === 0) newErrors.options = "At least one booking option is required";
         break;
     }
@@ -189,9 +222,110 @@ export default function AddTour() {
     }
   };
 
+  const duplicateTour = (tourId: string) => {
+    // Simulate loading existing tour data
+    const existingTours: Record<string, Partial<FormData>> = {
+      "tour-1": {
+        title: "City Walking Tour - Historical District (Copy)",
+        shortDescription: "Explore the historic heart of the city with expert guides",
+        fullDescription: "Join us for a fascinating journey through centuries of history...",
+        highlights: ["Historic landmarks", "Local stories", "Hidden gems"],
+        productCategory: "tour",
+        locations: ["Downtown", "Historic District", "City Center"],
+        keywords: ["history", "walking", "culture"],
+        adultPrice: "45.00",
+        childPrice: "25.00",
+        currency: "USD"
+      },
+      "tour-2": {
+        title: "Food & Culture Experience (Copy)",
+        shortDescription: "Taste authentic local cuisine and learn about culture",
+        fullDescription: "Discover the flavors and traditions of our city...",
+        highlights: ["Local food", "Cultural sites", "Market visits"],
+        productCategory: "tour",
+        locations: ["Food Market", "Cultural Quarter"],
+        keywords: ["food", "culture", "local"],
+        adultPrice: "65.00",
+        childPrice: "35.00",
+        currency: "USD"
+      }
+    };
+
+    const tourData = existingTours[tourId];
+    if (tourData) {
+      setFormData(prev => ({ ...prev, ...tourData }));
+    }
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1: // Product Category
+      case 1: // Tour Type
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">How would you like to create your tour?</h3>
+              <div className="space-y-4">
+                <label className="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input
+                    type="radio"
+                    name="tourType"
+                    value="new"
+                    checked={formData.tourType === "new"}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tourType: e.target.value }))}
+                    className="mt-1 mr-3"
+                  />
+                  <div>
+                    <div className="font-medium">Create New Tour</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Start from scratch and create a completely new tour</div>
+                  </div>
+                </label>
+                
+                <label className="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input
+                    type="radio"
+                    name="tourType"
+                    value="duplicate"
+                    checked={formData.tourType === "duplicate"}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tourType: e.target.value }))}
+                    className="mt-1 mr-3"
+                  />
+                  <div>
+                    <div className="font-medium">Duplicate Existing Tour</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Copy an existing tour and modify it as needed</div>
+                  </div>
+                </label>
+              </div>
+              
+              {formData.tourType === "duplicate" && (
+                <div className="mt-6">
+                  <label className="block text-sm font-medium mb-2">Select Tour to Duplicate</label>
+                  <select
+                    value={formData.duplicateFromId}
+                    onChange={(e) => {
+                      const tourId = e.target.value;
+                      setFormData(prev => ({ ...prev, duplicateFromId: tourId }));
+                      if (tourId) {
+                        duplicateTour(tourId);
+                      }
+                    }}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="">Choose existing tour...</option>
+                    <option value="tour-1">City Walking Tour - Historical District</option>
+                    <option value="tour-2">Food & Culture Experience</option>
+                    <option value="tour-3">Adventure Mountain Hiking</option>
+                    <option value="tour-4">Sunset Photography Tour</option>
+                  </select>
+                  {errors.duplicateFromId && <p className="text-red-500 text-sm mt-1">{errors.duplicateFromId}</p>}
+                </div>
+              )}
+              
+              {errors.tourType && <p className="text-red-500 text-sm mt-2">{errors.tourType}</p>}
+            </div>
+          </div>
+        );
+
+      case 2: // Product Category
         return (
           <div className="space-y-6">
             <div>
@@ -222,7 +356,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 2: // AI Content Creator
+      case 3: // AI Content Creator
         return (
           <div className="space-y-6">
             <div>
@@ -280,7 +414,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 3: // Main Information
+      case 4: // Main Information
         return (
           <div className="space-y-6">
             <div>
@@ -368,7 +502,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 4: // Locations
+      case 5: // Locations
         return (
           <div className="space-y-6">
             <div>
@@ -442,7 +576,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 5: // Keywords
+      case 6: // Keywords
         return (
           <div className="space-y-6">
             <div>
@@ -520,7 +654,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 6: // Inclusions
+      case 7: // Inclusions
         return (
           <div className="space-y-6">
             <div>
@@ -683,7 +817,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 7: // Extra Information
+      case 8: // Extra Information
         return (
           <div className="space-y-6">
             <div>
@@ -772,65 +906,221 @@ export default function AddTour() {
           </div>
         );
 
-      case 8: // Photos
+      case 9: // Media
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Add photos to your product</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Images help customers visualize joining your activity. You need at least 4.
-              </p>
+              <h3 className="text-lg font-medium mb-4">Add media to your tour</h3>
               
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setFormData(prev => ({ ...prev, photos: [...prev.photos, ...files] }));
-                  }}
-                  className="hidden"
-                  id="photo-upload"
-                />
-                <label htmlFor="photo-upload" className="cursor-pointer">
-                  <div className="text-gray-500">
-                    <p>Drag photos here or click to upload</p>
-                    <p className="text-sm mt-2">JPG, JPEG, PNG, GIF up to 7MB each</p>
-                  </div>
-                </label>
+              {/* Photos Section */}
+              <div className="mb-8">
+                <h4 className="font-medium mb-4">Photos (minimum 4 required)</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  High-quality images help customers visualize your tour experience.
+                </p>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-4">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setFormData(prev => ({ ...prev, photos: [...prev.photos, ...files] }));
+                    }}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+                  <label htmlFor="photo-upload" className="cursor-pointer">
+                    <div className="text-gray-500">
+                      <p>Drag photos here or click to upload</p>
+                      <p className="text-sm mt-2">JPG, JPEG, PNG up to 5MB each</p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {formData.photos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt={`Photo ${index + 1}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          photos: prev.photos.filter((_, i) => i !== index)
+                        }))}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 text-sm"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-sm text-gray-500 mt-2">
+                  {formData.photos.length} / 4 minimum photos uploaded
+                </p>
+                {errors.photos && <p className="text-red-500 text-sm mt-2">{errors.photos}</p>}
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                {formData.photos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Photo ${index + 1}`}
-                      className="w-full h-24 object-cover rounded"
-                    />
-                    <button
-                      onClick={() => setFormData(prev => ({
-                        ...prev,
-                        photos: prev.photos.filter((_, i) => i !== index)
-                      }))}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 text-sm"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+              {/* Videos Section */}
+              <div>
+                <h4 className="font-medium mb-4">Videos (maximum 2 allowed)</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Short videos can showcase the tour experience and attract more bookings.
+                </p>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-4">
+                  <input
+                    type="file"
+                    multiple
+                    accept="video/*"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      const newVideos = files.slice(0, 2 - formData.videos.length);
+                      setFormData(prev => ({ ...prev, videos: [...prev.videos, ...newVideos] }));
+                    }}
+                    className="hidden"
+                    id="video-upload"
+                    disabled={formData.videos.length >= 2}
+                  />
+                  <label htmlFor="video-upload" className={`cursor-pointer ${formData.videos.length >= 2 ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    <div className="text-gray-500">
+                      <p>Drag videos here or click to upload</p>
+                      <p className="text-sm mt-2">MP4, MOV, AVI up to 50MB each (max 2 videos)</p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {formData.videos.map((video, index) => (
+                    <div key={index} className="relative">
+                      <video
+                        src={URL.createObjectURL(video)}
+                        className="w-full h-32 object-cover rounded"
+                        controls
+                      />
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          videos: prev.videos.filter((_, i) => i !== index)
+                        }))}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 text-sm"
+                      >
+                        ×
+                      </button>
+                      <p className="text-xs text-gray-500 mt-1 truncate">{video.name}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-sm text-gray-500 mt-2">
+                  {formData.videos.length} / 2 maximum videos uploaded
+                </p>
               </div>
-              
-              <p className="text-sm text-gray-500 mt-2">
-                {formData.photos.length} / 4 minimum photos uploaded
-              </p>
-              {errors.photos && <p className="text-red-500 text-sm mt-2">{errors.photos}</p>}
             </div>
           </div>
         );
 
-      case 9: // Options
+      case 10: // Pricing
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Set your tour pricing</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                Configure pricing for different customer categories. All prices should be in the selected currency.
+              </p>
+              
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Currency</label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="USD">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="GBP">GBP - British Pound</option>
+                    <option value="CAD">CAD - Canadian Dollar</option>
+                    <option value="AUD">AUD - Australian Dollar</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Adult Price *</label>
+                  <input
+                    type="number"
+                    value={formData.adultPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, adultPrice: e.target.value }))}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                  {errors.adultPrice && <p className="text-red-500 text-sm mt-1">{errors.adultPrice}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Child Price (optional)</label>
+                  <input
+                    type="number"
+                    value={formData.childPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, childPrice: e.target.value }))}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Ages 3-12</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Infant Price (optional)</label>
+                  <input
+                    type="number"
+                    value={formData.infantPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, infantPrice: e.target.value }))}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Ages 0-2</p>
+                </div>
+
+                <div className="lg:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Group Price (optional)</label>
+                  <input
+                    type="number"
+                    value={formData.groupPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, groupPrice: e.target.value }))}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Fixed price for private groups (10+ people)</p>
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <h4 className="font-medium mb-2">Pricing Summary</h4>
+                <div className="text-sm space-y-1">
+                  <p><strong>Adult:</strong> {formData.currency} {formData.adultPrice || '0.00'}</p>
+                  {formData.childPrice && <p><strong>Child:</strong> {formData.currency} {formData.childPrice}</p>}
+                  {formData.infantPrice && <p><strong>Infant:</strong> {formData.currency} {formData.infantPrice}</p>}
+                  {formData.groupPrice && <p><strong>Group:</strong> {formData.currency} {formData.groupPrice}</p>}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 11: // Options
         return (
           <div className="space-y-6">
             <div>
@@ -869,27 +1159,62 @@ export default function AddTour() {
                     >
                       Create New Option
                     </button>
-                    {formData.options.length > 0 && (
-                      <select
-                        onChange={(e) => {
-                          if (e.target.value) {
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          if (e.target.value.startsWith('existing-')) {
+                            const existingOptions = {
+                              'existing-1': { title: 'Standard Group Tour', languages: ['English'], durationType: 'duration', duration: '3', pricingType: 'per-person' },
+                              'existing-2': { title: 'Private VIP Experience', languages: ['English', 'Spanish'], durationType: 'duration', duration: '4', pricingType: 'per-group', isPrivate: true },
+                              'existing-3': { title: 'Skip-the-Line Access', languages: ['English'], durationType: 'validity', duration: '1 day', pricingType: 'per-person', skipLine: true }
+                            };
+                            const selectedOption = existingOptions[e.target.value as keyof typeof existingOptions];
+                            setShowOptionModal(true);
+                            setOptionStep(1);
+                            setCurrentOption({ 
+                              title: selectedOption.title,
+                              languages: selectedOption.languages as string[],
+                              isPrivate: selectedOption.isPrivate || false,
+                              skipLine: selectedOption.skipLine || false,
+                              wheelchairAccessible: false,
+                              durationType: selectedOption.durationType,
+                              duration: selectedOption.duration,
+                              meetingType: "meeting-point",
+                              meetingPoint: "",
+                              meetingDescription: "",
+                              arrivalTime: "on-time",
+                              availabilityType: "time-slots",
+                              pricingType: selectedOption.pricingType,
+                              cutoffTime: "2-hours"
+                            });
+                          } else {
                             const templateOption = formData.options[parseInt(e.target.value)];
                             setShowOptionModal(true);
                             setOptionStep(1);
                             setCurrentOption({ ...templateOption, title: templateOption.title + " (Copy)" });
                           }
-                        }}
-                        className="px-4 py-2 border rounded-lg"
-                        defaultValue=""
-                      >
-                        <option value="">Use existing as template</option>
-                        {formData.options.map((_, index) => (
-                          <option key={index} value={index}>
-                            {formData.options[index].title || `Option ${index + 1}`}
-                          </option>
-                        ))}
-                      </select>
-                    )}
+                        }
+                        e.target.value = '';
+                      }}
+                      className="px-4 py-2 border rounded-lg"
+                      defaultValue=""
+                    >
+                      <option value="">Select existing option</option>
+                      <optgroup label="Pre-built Options">
+                        <option value="existing-1">Standard Group Tour</option>
+                        <option value="existing-2">Private VIP Experience</option>
+                        <option value="existing-3">Skip-the-Line Access</option>
+                      </optgroup>
+                      {formData.options.length > 0 && (
+                        <optgroup label="Your Options">
+                          {formData.options.map((_, index) => (
+                            <option key={index} value={index}>
+                              {formData.options[index].title || `Option ${index + 1}`}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                    </select>
                   </div>
                 </div>
 
@@ -897,6 +1222,7 @@ export default function AddTour() {
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                     <h4 className="text-lg font-medium mb-2">No booking options created yet</h4>
                     <p className="text-gray-600 mb-4">You need at least one option to start receiving bookings.</p>
+                    <p className="text-sm text-gray-500">Choose from pre-built options above or create a new one.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -909,19 +1235,33 @@ export default function AddTour() {
                               <h5 className="font-medium">{option.title || `Option ${index + 1}`}</h5>
                               <p className="text-sm text-gray-600">
                                 {option.languages?.join(", ")} • {option.durationType === "duration" ? "Duration" : "Validity"} • {option.pricingType === "per-person" ? "Per Person" : "Per Group"}
+                                {option.isPrivate && " • Private"}
+                                {option.skipLine && " • Skip-the-Line"}
                               </p>
                             </div>
-                            <button
-                              onClick={() => {
-                                setFormData(prev => ({
-                                  ...prev,
-                                  options: prev.options.filter((_, i) => i !== index)
-                                }));
-                              }}
-                              className="text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded"
-                            >
-                              Delete
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setShowOptionModal(true);
+                                  setOptionStep(1);
+                                  setCurrentOption(option);
+                                }}
+                                className="text-blue-600 hover:text-blue-800 px-3 py-1 border border-blue-300 rounded"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    options: prev.options.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                                className="text-red-600 hover:text-red-800 px-3 py-1 border border-red-300 rounded"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
                       );
@@ -933,7 +1273,7 @@ export default function AddTour() {
           </div>
         );
 
-      case 10: // Review
+      case 12: // Review
         return (
           <div className="space-y-6">
             <div className="text-center">
@@ -952,11 +1292,14 @@ export default function AddTour() {
               <div className="mt-8 p-4 border rounded-lg bg-gray-50">
                 <h5 className="font-medium mb-2">Tour Summary:</h5>
                 <div className="text-left space-y-1 text-sm">
+                  <p><strong>Type:</strong> {formData.tourType === 'new' ? 'New Tour' : 'Duplicated Tour'}</p>
                   <p><strong>Title:</strong> {formData.title || 'Not set'}</p>
                   <p><strong>Category:</strong> {formData.productCategory || 'Not selected'}</p>
                   <p><strong>Locations:</strong> {formData.locations.length} locations</p>
                   <p><strong>Keywords:</strong> {formData.keywords.length} keywords</p>
-                  <p><strong>Photos:</strong> {formData.photos.length} uploaded</p>
+                  <p><strong>Media:</strong> {formData.photos.length} photos, {formData.videos.length} videos</p>
+                  <p><strong>Pricing:</strong> {formData.currency} {formData.adultPrice || '0.00'} (Adult)</p>
+                  <p><strong>Options:</strong> {formData.options.length} booking options</p>
                 </div>
               </div>
             </div>
@@ -1428,7 +1771,19 @@ export default function AddTour() {
                 {optionStep === 5 ? (
                   <button
                     onClick={() => {
-                      setFormData(prev => ({ ...prev, options: [...prev.options, currentOption] }));
+                      const existingIndex = formData.options.findIndex(opt => 
+                        opt.title === currentOption.title && 
+                        !currentOption.title.includes('(Copy)') &&
+                        JSON.stringify(opt) !== JSON.stringify(currentOption)
+                      );
+                      if (existingIndex >= 0) {
+                        setFormData(prev => ({
+                          ...prev,
+                          options: prev.options.map((opt, i) => i === existingIndex ? currentOption : opt)
+                        }));
+                      } else {
+                        setFormData(prev => ({ ...prev, options: [...prev.options, currentOption] }));
+                      }
                       setShowOptionModal(false);
                     }}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
