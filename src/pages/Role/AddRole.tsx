@@ -165,11 +165,6 @@ export default function AddRole() {
   const handleDriverSelectChange = (field: string) => (value: string) => {
     setDriverData(prev => ({ ...prev, [field]: value }));
   };
-
-  const handleBasicRoleSelectChange = (field: string) => (value: string) => {
-    setBasicRoleData(prev => ({ ...prev, [field]: value }));
-  };
-
   const handleSupplierSelectChange = (field: string) => (value: string) => {
     setSupplierData(prev => ({ ...prev, [field]: value }));
   };

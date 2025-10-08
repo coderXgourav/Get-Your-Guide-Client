@@ -1163,7 +1163,16 @@ export default function AddTour() {
                       onChange={(e) => {
                         if (e.target.value) {
                           if (e.target.value.startsWith('existing-')) {
-                            const existingOptions = {
+                            type ExistingOption = {
+                              title: string;
+                              languages: string[];
+                              durationType: string;
+                              duration: string;
+                              pricingType: string;
+                              isPrivate?: boolean;
+                              skipLine?: boolean;
+                            };
+                            const existingOptions: Record<string, ExistingOption> = {
                               'existing-1': { title: 'Standard Group Tour', languages: ['English'], durationType: 'duration', duration: '3', pricingType: 'per-person' },
                               'existing-2': { title: 'Private VIP Experience', languages: ['English', 'Spanish'], durationType: 'duration', duration: '4', pricingType: 'per-group', isPrivate: true },
                               'existing-3': { title: 'Skip-the-Line Access', languages: ['English'], durationType: 'validity', duration: '1 day', pricingType: 'per-person', skipLine: true }
