@@ -20,6 +20,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import AddBus from "./pages/Bus/AddBus";
 import ViewBuses from "./pages/Bus/ViewBuses";
+import TrackBus from "./pages/Bus/TrackBus";
 import AddRole from "./pages/Role/AddRole";
 import ViewRole from "./pages/Role/ViewRole";
 import AddTour from "./pages/Tour/AddTour";
@@ -67,6 +68,7 @@ export default function App() {
             {/* Bus Management */}
             <Route path="add-bus" element={<AddBus />} />
             <Route path="view-buses" element={<ViewBuses />} />
+            <Route path="track-bus" element={<TrackBus />} />
 
             {/* Tour Management */}
             <Route path="add-tour" element={<AddTour />} />

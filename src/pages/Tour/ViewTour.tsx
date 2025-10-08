@@ -262,20 +262,22 @@ export default function ViewTour() {
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center gap-2">
+                    <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(tour.id)}
-                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         title="Edit Tour"
                       >
-                        <PencilIcon className="h-4 w-4" />
+                        <PencilIcon className="w-3 h-3 mr-1" />
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDelete(tour.id)}
-                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1 rounded"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
                         title="Delete Tour"
                       >
-                        <TrashBinIcon className="h-4 w-4" />
+                        <TrashBinIcon className="w-3 h-3 mr-1" />
+                        Delete
                       </button>
                     </div>
                   </td>

@@ -42,6 +42,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Add Bus", path: "/admin/add-bus", pro: false },
       { name: "View Buses", path: "/admin/view-buses", pro: false },
+      { name: "Track Bus", path: "/admin/track-bus", pro: false },
     ],
   },
   {

@@ -13,6 +13,7 @@ type Role = {
   permissions: string[];
   createdAt: string;
   status: "active" | "inactive";
+  image?: string;
 };
 
 export default function ViewRole() {
@@ -26,6 +27,7 @@ export default function ViewRole() {
       permissions: ["BUS_MANAGE", "TOUR_ALLOCATE"],
       createdAt: "2024-01-15",
       status: "active",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     },
     {
       id: "2",
@@ -36,6 +38,7 @@ export default function ViewRole() {
       permissions: ["TOUR_MANAGE", "FINANCE"],
       createdAt: "2024-01-10",
       status: "active",
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center",
     },
     {
       id: "3",
@@ -46,6 +49,7 @@ export default function ViewRole() {
       permissions: ["TOUR_ALLOCATE"],
       createdAt: "2024-01-08",
       status: "inactive",
+      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
     },
   ]);
 
@@ -128,7 +132,7 @@ export default function ViewRole() {
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role Details
+                  Profile
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Contact Info
@@ -151,18 +155,27 @@ export default function ViewRole() {
               {filteredRoles.map((role) => (
                 <tr key={role.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {role.name}
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-12 w-12">
+                        <img
+                          className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
+                          src={role.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(role.name)}&background=3B82F6&color=fff`}
+                          alt={role.name}
+                        />
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          role.type === "driver" 
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        }`}>
-                          {role.type.charAt(0).toUpperCase() + role.type.slice(1)}
-                        </span>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {role.name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            role.type === "driver" 
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                              : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          }`}>
+                            {role.type.charAt(0).toUpperCase() + role.type.slice(1)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -201,17 +214,19 @@ export default function ViewRole() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(role.id)}
-                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         title="Edit Role"
                       >
-                        <PencilIcon className="w-4 h-4" />
+                        <PencilIcon className="w-3 h-3 mr-1" />
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDelete(role.id)}
-                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
                         title="Delete Role"
                       >
-                        <TrashIcon className="w-4 h-4" />
+                        <TrashIcon className="w-3 h-3 mr-1" />
+                        Delete
                       </button>
                     </div>
                   </td>
