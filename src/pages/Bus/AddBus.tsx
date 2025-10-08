@@ -21,6 +21,16 @@ export default function AddBus() {
     exDate: "",
     vinNo: "",
     image: null as File | null,
+    // Bus Service Records
+    busServiceDate: "",
+    nextServiceDate: "",
+    kmOnServiceDate: "",
+    engineOil: false,
+    oilFilter: false,
+    brakes: false,
+    tires: false,
+    lightIndicator: false,
+    allOtherIssues: "",
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -34,8 +44,11 @@ export default function AddBus() {
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
   const handleSelectChange = (value: string) => {
@@ -242,6 +255,53 @@ export default function AddBus() {
                 placeholder="Enter VIN number"
               />
             </div>
+          </div>
+
+          {/* Bus Service Records Section */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-t pt-6">Bus Service Records</h3>
+            
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div>
+                <Label htmlFor="busServiceDate">Bus Service Date</Label>
+                <Input
+                  type="date"
+                  id="busServiceDate"
+                  name="busServiceDate"
+                  value={formData.busServiceDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="nextServiceDate">Next Service Date</Label>
+                <Input
+                  type="date"
+                  id="nextServiceDate"
+                  name="nextServiceDate"
+                  value={formData.nextServiceDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="kmOnServiceDate">Km on Service Date</Label>
+                <Input
+                  type="number"
+                  id="kmOnServiceDate"
+                  name="kmOnServiceDate"
+                  value={formData.kmOnServiceDate}
+                  onChange={handleInputChange}
+                  placeholder="Enter kilometers"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Major Services Done */}
+         
+
+          
           </div>
 
           {/* Submit Button */}

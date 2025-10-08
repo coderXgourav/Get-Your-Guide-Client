@@ -7,8 +7,8 @@ import Input from "../../components/form/input/InputField";
 import Select from "../../components/form/Select";
 import { PlusIcon, FileIcon } from "../../icons";
 
-type RoleType = "driver" | "supplier" | "";
-type Permission = "BUS_MANAGE" | "TOUR_ALLOCATE" | "TOUR_MANAGE" | "FINANCE";
+type RoleType = "admin" | "manager" | "driver" | "owner" | "guide" | "supplier" | "general_manager" | "front_office_manager" | "guest_relation_manager" | "public_relation_manager" | "director_of_sales" | "administrative" | "customer_relationship" | "others" | "";
+type Permission = "BUS_MANAGE" | "TOUR_ALLOCATE" | "TOUR_MANAGE" | "FINANCE" | "ROLE_MANAGE";
 
 export default function AddRole() {
   const [selectedRole, setSelectedRole] = useState<RoleType>("");
@@ -20,14 +20,19 @@ export default function AddRole() {
     email: "",
     phone: "",
     licenseNumber: "",
+    licenseClass: "",
     experience: "",
     address: "",
     emergencyContact: "",
     bloodGroup: "",
+    dateOfBirth: "",
+    qualification: "",
     licenseDocument: null as File | null,
     driverAbstract: "",
+    driverAbstractFile: null as File | null,
+    driverAbstractNo: "",
+    driverAbstractExpiry: "",
     driverLicenseExpiry: "",
-    driverUpdateExpiry: "",
     image: null as File | null,
   });
 
@@ -41,21 +46,43 @@ export default function AddRole() {
     state: "",
     pincode: "",
     gstNumber: "",
-    panNumber: "",
+    sinNumber: "",
+    sinCountryIssue: "",
+    qualification: "",
     businessType: "",
     serviceType: "",
     bankName: "",
     accountNumber: "",
-    ifscCode: "",
     countryIssue: "",
     bankDetailIssueNo: "",
     image: null as File | null,
     registrationDocument: null as File | null,
   });
 
+  const [basicRoleData, setBasicRoleData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    qualification: "",
+    image: null as File | null,
+  });
+
   const roleOptions = [
+    { value: "admin", label: "Admin" },
+    { value: "manager", label: "Manager" },
     { value: "driver", label: "Driver" },
+    { value: "owner", label: "Owner" },
+    { value: "guide", label: "Guide" },
     { value: "supplier", label: "Supplier" },
+    { value: "general_manager", label: "General Manager" },
+    { value: "front_office_manager", label: "Front Office Manager" },
+    { value: "guest_relation_manager", label: "Guest Relation Manager" },
+    { value: "public_relation_manager", label: "Public Relation Manager" },
+    { value: "director_of_sales", label: "Director of Sales" },
+    { value: "administrative", label: "Administrative" },
+    { value: "customer_relationship", label: "Customer Relationship" },
+    { value: "others", label: "Others" },
   ];
 
   const bloodGroupOptions = [
@@ -86,11 +113,24 @@ export default function AddRole() {
     { value: "Other", label: "Other" },
   ];
 
+  const licenseClassOptions = [
+    { value: "Class 7 Learner's Licence", label: "Class 7 Learner's Licence" },
+    { value: "Class 5 GDL", label: "Class 5 GDL" },
+    { value: "Class 5 (Full Licence)", label: "Class 5 (Full Licence)" },
+    { value: "Class 6", label: "Class 6" },
+    { value: "Class 1", label: "Class 1" },
+    { value: "Class 2", label: "Class 2" },
+    { value: "Class 3", label: "Class 3" },
+    { value: "Class 4", label: "Class 4" },
+    { value: "others", label: "Others" },
+  ];
+
   const permissionOptions: { value: Permission; label: string }[] = [
     { value: "BUS_MANAGE", label: "Bus Management" },
     { value: "TOUR_ALLOCATE", label: "Tour Allocation" },
     { value: "TOUR_MANAGE", label: "Tour Management" },
     { value: "FINANCE", label: "Finance" },
+    { value: "ROLE_MANAGE", label: "Role Management" },
   ];
 
   const handleRoleChange = (value: string) => {
@@ -117,8 +157,17 @@ export default function AddRole() {
     setSupplierData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleBasicRoleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setBasicRoleData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleDriverSelectChange = (field: string) => (value: string) => {
     setDriverData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleBasicRoleSelectChange = (field: string) => (value: string) => {
+    setBasicRoleData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSupplierSelectChange = (field: string) => (value: string) => {
@@ -132,6 +181,8 @@ export default function AddRole() {
         setDriverData(prev => ({ ...prev, image: file }));
       } else if (selectedRole === "supplier") {
         setSupplierData(prev => ({ ...prev, image: file }));
+      } else {
+        setBasicRoleData(prev => ({ ...prev, image: file }));
       }
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -154,10 +205,18 @@ export default function AddRole() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    let data;
+    if (selectedRole === "driver") {
+      data = driverData;
+    } else if (selectedRole === "supplier") {
+      data = supplierData;
+    } else {
+      data = basicRoleData;
+    }
     const formData = {
       role: selectedRole,
       permissions,
-      data: selectedRole === "driver" ? driverData : supplierData,
+      data,
     };
     console.log("Role data:", formData);
   };
@@ -232,8 +291,18 @@ export default function AddRole() {
                 </div>
 
                 <div>
+                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                  <Input type="date" id="dateOfBirth" name="dateOfBirth" value={driverData.dateOfBirth} onChange={handleDriverInputChange} />
+                </div>
+
+                <div>
                   <Label htmlFor="licenseNumber">License Number *</Label>
                   <Input type="text" id="licenseNumber" name="licenseNumber" value={driverData.licenseNumber} onChange={handleDriverInputChange} placeholder="Enter license number" />
+                </div>
+
+                <div>
+                  <Label>Driver License Class *</Label>
+                  <Select options={licenseClassOptions} placeholder="Select license class" onChange={handleDriverSelectChange("licenseClass")} className="dark:bg-gray-900" />
                 </div>
 
                 <div>
@@ -244,6 +313,11 @@ export default function AddRole() {
                 <div>
                   <Label>Blood Group</Label>
                   <Select options={bloodGroupOptions} placeholder="Select blood group" onChange={handleDriverSelectChange("bloodGroup")} className="dark:bg-gray-900" />
+                </div>
+
+                <div>
+                  <Label htmlFor="qualification">Qualification</Label>
+                  <Input type="text" id="qualification" name="qualification" value={driverData.qualification} onChange={handleDriverInputChange} placeholder="Enter qualification" />
                 </div>
 
                 <div className="lg:col-span-2">
@@ -262,13 +336,35 @@ export default function AddRole() {
                 </div>
 
                 <div>
-                  <Label htmlFor="driverUpdateExpiry">Driver Update Expiry</Label>
-                  <Input type="date" id="driverUpdateExpiry" name="driverUpdateExpiry" value={driverData.driverUpdateExpiry} onChange={handleDriverInputChange} />
+                  <Label htmlFor="driverAbstractNo">Driver Abstract No</Label>
+                  <Input type="text" id="driverAbstractNo" name="driverAbstractNo" value={driverData.driverAbstractNo} onChange={handleDriverInputChange} placeholder="Enter driver abstract number" />
+                </div>
+
+                <div>
+                  <Label htmlFor="driverAbstractExpiry">Driver Abstract Expiry</Label>
+                  <Input type="date" id="driverAbstractExpiry" name="driverAbstractExpiry" value={driverData.driverAbstractExpiry} onChange={handleDriverInputChange} />
                 </div>
 
                 <div className="lg:col-span-2">
                   <Label htmlFor="driverAbstract">Driver Abstract</Label>
                   <Input type="text" id="driverAbstract" name="driverAbstract" value={driverData.driverAbstract} onChange={handleDriverInputChange} placeholder="Enter driver abstract" />
+                </div>
+
+                {/* Driver Abstract File */}
+                <div className="lg:col-span-2">
+                  <Label>Driver Abstract File</Label>
+                  <div className="flex items-center gap-4">
+                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleDocumentChange("driverAbstractFile")} className="hidden" id="driver-abstract-file" />
+                    <label htmlFor="driver-abstract-file" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <div className="text-center">
+                        <FileIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {driverData.driverAbstractFile ? driverData.driverAbstractFile.name : "Click to upload driver abstract file"}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, JPG, PNG up to 10MB</p>
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
                 {/* License Document */}
@@ -286,6 +382,64 @@ export default function AddRole() {
                       </div>
                     </label>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {(selectedRole && selectedRole !== "driver" && selectedRole !== "supplier") && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{roleOptions.find(r => r.value === selectedRole)?.label} Information</h3>
+              
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {/* Basic Role Image */}
+                <div className="lg:col-span-2">
+                  <Label>Photo</Label>
+                  <div className="flex items-center gap-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-24 h-24 rounded-full border-2 border-gray-300 dark:border-gray-700 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Role preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <PlusIcon className="w-8 h-8" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="basic-role-image" />
+                      <label htmlFor="basic-role-image" className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                        Choose Photo
+                      </label>
+                      <p className="mt-1 text-xs text-gray-500">JPG, PNG up to 5MB</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="name">Full Name *</Label>
+                  <Input type="text" id="name" name="name" value={basicRoleData.name} onChange={handleBasicRoleInputChange} placeholder="Enter full name" />
+                </div>
+
+                <div>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input type="email" id="email" name="email" value={basicRoleData.email} onChange={handleBasicRoleInputChange} placeholder="user@example.com" />
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Input type="tel" id="phone" name="phone" value={basicRoleData.phone} onChange={handleBasicRoleInputChange} placeholder="+1 (555) 123-4567" />
+                </div>
+
+                <div>
+                  <Label htmlFor="qualification">Qualification</Label>
+                  <Input type="text" id="qualification" name="qualification" value={basicRoleData.qualification} onChange={handleBasicRoleInputChange} placeholder="Enter qualification" />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input type="text" id="address" name="address" value={basicRoleData.address} onChange={handleBasicRoleInputChange} placeholder="Enter complete address" />
                 </div>
               </div>
             </div>
@@ -367,8 +521,18 @@ export default function AddRole() {
                 </div>
 
                 <div>
-                  <Label htmlFor="panNumber">PAN Number</Label>
-                  <Input type="text" id="panNumber" name="panNumber" value={supplierData.panNumber} onChange={handleSupplierInputChange} placeholder="Enter PAN number" />
+                  <Label htmlFor="sinNumber">SIN Number</Label>
+                  <Input type="text" id="sinNumber" name="sinNumber" value={supplierData.sinNumber} onChange={handleSupplierInputChange} placeholder="Enter SIN number" />
+                </div>
+
+                <div>
+                  <Label htmlFor="sinCountryIssue">Country of Issue for SIN</Label>
+                  <Input type="text" id="sinCountryIssue" name="sinCountryIssue" value={supplierData.sinCountryIssue} onChange={handleSupplierInputChange} placeholder="Enter country of issue" />
+                </div>
+
+                <div>
+                  <Label htmlFor="qualification">Qualification</Label>
+                  <Input type="text" id="qualification" name="qualification" value={supplierData.qualification} onChange={handleSupplierInputChange} placeholder="Enter qualification" />
                 </div>
 
                 <div>
@@ -394,11 +558,6 @@ export default function AddRole() {
                 <div>
                   <Label htmlFor="accountNumber">Account Number</Label>
                   <Input type="text" id="accountNumber" name="accountNumber" value={supplierData.accountNumber} onChange={handleSupplierInputChange} placeholder="Enter account number" />
-                </div>
-
-                <div>
-                  <Label htmlFor="ifscCode">IFSC Code</Label>
-                  <Input type="text" id="ifscCode" name="ifscCode" value={supplierData.ifscCode} onChange={handleSupplierInputChange} placeholder="Enter IFSC code" />
                 </div>
 
                 <div>
