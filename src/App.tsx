@@ -18,6 +18,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import { AuthProvider } from "./context/AuthContext";
 import AddBus from "./pages/Bus/AddBus";
 import ViewBuses from "./pages/Bus/ViewBuses";
 import TrackBus from "./pages/Bus/TrackBus";
@@ -29,7 +30,7 @@ import AllocateTour from "./pages/Tour/AllocateTour";
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Router>
         <ScrollToTop />
         <Routes>
@@ -88,6 +89,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 }
