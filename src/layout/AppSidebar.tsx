@@ -14,11 +14,13 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { useAuth } from "../context/AuthContext";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
+  permission?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -31,6 +33,7 @@ const navItems: NavItem[] = [
   {
     name: "Manage Role",
     icon: <UserCircleIcon />,
+    permission: "ROLE_MANAGE",
     subItems: [
       { name: "Add Role", path: "/admin/add-role", pro: false },
       { name: "View Role", path: "/admin/view-role", pro: false },
@@ -39,6 +42,7 @@ const navItems: NavItem[] = [
   {
     name: "Bus Manage",
     icon: <BoxIcon />,
+    permission: "BUS_MANAGE",
     subItems: [
       { name: "Add Bus", path: "/admin/add-bus", pro: false },
       { name: "View Buses", path: "/admin/view-buses", pro: false },
@@ -49,10 +53,12 @@ const navItems: NavItem[] = [
     icon: <TaskIcon />,
     name: "Tour Allocate",
     path: "/admin/tour-allocate",
+    permission: "TOUR_ALLOCATE",
   },
   {
     name: "Tour Manage",
     icon: <CalenderIcon />,
+    permission: "TOUR_MANAGE",
     subItems: [
       { name: "Add Tour", path: "/admin/add-tour", pro: false },
       { name: "View Tour", path: "/admin/view-tour", pro: false },
@@ -62,6 +68,7 @@ const navItems: NavItem[] = [
     icon: <DollarLineIcon />,
     name: "Finance",
     path: "/admin/finance",
+    permission: "FINANCE",
   },
 ];
 
@@ -69,6 +76,7 @@ const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { hasPermission } = useAuth();
   const location = useLocation();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
@@ -137,7 +145,7 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
-      {items.map((nav, index) => (
+      {items.filter(nav => !nav.permission || hasPermission(nav.permission)).map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button

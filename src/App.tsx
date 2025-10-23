@@ -19,11 +19,14 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import AddBus from "./pages/Bus/AddBus";
 import ViewBuses from "./pages/Bus/ViewBuses";
+import EditBus from "./pages/Bus/EditBus";
 import TrackBus from "./pages/Bus/TrackBus";
 import AddRole from "./pages/Role/AddRole";
 import ViewRole from "./pages/Role/ViewRole";
+import EditRole from "./pages/Role/EditRole";
 import AddTour from "./pages/Tour/AddTour";
 import ViewTour from "./pages/Tour/ViewTour";
 import AllocateTour from "./pages/Tour/AllocateTour";
@@ -35,7 +38,7 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           {/* Admin Dashboard Layout */}
-          <Route path="/admin" element={<AppLayout />}>
+          <Route path="/admin" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index element={<Home />} />
             <Route path="dashboard" element={<Home />} />
             
@@ -63,22 +66,24 @@ export default function App() {
             <Route path="bar-chart" element={<BarChart />} />
 
             {/* Role Management */}
-            <Route path="add-role" element={<AddRole />} />
-            <Route path="view-role" element={<ViewRole />} />
+            <Route path="add-role" element={<ProtectedRoute requiredPermission="ROLE_MANAGE"><AddRole /></ProtectedRoute>} />
+            <Route path="view-role" element={<ProtectedRoute requiredPermission="ROLE_MANAGE"><ViewRole /></ProtectedRoute>} />
+            <Route path="role/edit/:id" element={<ProtectedRoute requiredPermission="ROLE_MANAGE"><EditRole /></ProtectedRoute>} />
 
             {/* Bus Management */}
-            <Route path="add-bus" element={<AddBus />} />
-            <Route path="view-buses" element={<ViewBuses />} />
-            <Route path="track-bus" element={<TrackBus />} />
+            <Route path="add-bus" element={<ProtectedRoute requiredPermission="BUS_MANAGE"><AddBus /></ProtectedRoute>} />
+            <Route path="view-buses" element={<ProtectedRoute requiredPermission="BUS_MANAGE"><ViewBuses /></ProtectedRoute>} />
+            <Route path="bus/edit/:id" element={<ProtectedRoute requiredPermission="BUS_MANAGE"><EditBus /></ProtectedRoute>} />
+            <Route path="track-bus" element={<ProtectedRoute requiredPermission="BUS_MANAGE"><TrackBus /></ProtectedRoute>} />
 
             {/* Tour Management */}
-            <Route path="add-tour" element={<AddTour />} />
-            <Route path="view-tour" element={<ViewTour />} />
-            <Route path="tour-allocate" element={<AllocateTour />} />
+            <Route path="add-tour" element={<ProtectedRoute requiredPermission="TOUR_MANAGE"><AddTour /></ProtectedRoute>} />
+            <Route path="view-tour" element={<ProtectedRoute requiredPermission="TOUR_MANAGE"><ViewTour /></ProtectedRoute>} />
+            <Route path="tour-allocate" element={<ProtectedRoute requiredPermission="TOUR_ALLOCATE"><AllocateTour /></ProtectedRoute>} />
           </Route>
 
           {/* Redirect root to admin */}
-          <Route path="/" element={<AppLayout />}>
+          <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index element={<Home />} />
           </Route>
 

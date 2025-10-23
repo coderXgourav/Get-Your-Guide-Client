@@ -217,6 +217,8 @@ export default function AddRole() {
       if (!driverData.licenseClass) newErrors.licenseClass = 'License class is required';
       if (!driverData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
       if (!driverData.image) newErrors.image = 'Image is required';
+      if (!driverData.address) newErrors.address = 'Address is required';
+      if (!driverData.emergencyContact) newErrors.emergencyContact = 'Emergency contact is required';
     } else if (selectedRole === 'supplier') {
       if (!supplierData.companyName) newErrors.companyName = 'Company name is required';
       if (!supplierData.contactPerson) newErrors.contactPerson = 'Contact person is required';
@@ -229,10 +231,8 @@ export default function AddRole() {
       if (!supplierData.gstNumber) newErrors.gstNumber = 'GST number is required';
       if (!supplierData.businessType) newErrors.businessType = 'Business type is required';
       if (!supplierData.serviceType) newErrors.serviceType = 'Service type is required';
-      if (!supplierData.countryIssue) newErrors.countryIssue = 'Country issue is required';
-      if (!supplierData.bankDetailIssueNo) newErrors.bankDetailIssueNo = 'Bank detail issue no is required';
       if (!supplierData.image) newErrors.image = 'Image is required';
-    } else {
+    } else if (selectedRole) {
       if (!basicRoleData.name) newErrors.name = 'Name is required';
       if (!basicRoleData.email) newErrors.email = 'Email is required';
       if (!basicRoleData.phone) newErrors.phone = 'Phone is required';
@@ -276,7 +276,7 @@ export default function AddRole() {
         if (driverData.licenseDocument) formData.append('licenseDocument', driverData.licenseDocument);
         if (driverData.driverAbstractFile) formData.append('driverAbstractFile', driverData.driverAbstractFile);
       } else if (selectedRole === 'supplier') {
-        roleData = { ...supplierData, role: selectedRole, permissions, status };
+        roleData = { ...supplierData, name: supplierData.companyName, role: selectedRole, permissions, status };
         if (supplierData.image) formData.append('image', supplierData.image);
         if (supplierData.registrationDocument) formData.append('registrationDocument', supplierData.registrationDocument);
       } else {
@@ -316,8 +316,18 @@ export default function AddRole() {
         Swal.fire({
           icon: 'success',
           title: 'Registration Successful!',
-          text: 'Role has been registered successfully in the system',
+          html: `
+            <div style="text-align: left; margin-top: 20px;">
+              <p style="margin-bottom: 15px; color: #4b5563;">Role has been registered successfully!</p>
+              <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <p style="margin: 0; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Login Credentials:</p>
+                <p style="margin: 0; color: #4b5563; font-size: 14px;"><strong>Password:</strong> <code style="background-color: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-family: monospace; color: #dc2626; font-weight: 600;">${result.password}</code></p>
+              </div>
+              <p style="margin-top: 15px; font-size: 13px; color: #6b7280;">⚠️ Please save this password securely. It won't be shown again.</p>
+            </div>
+          `,
           confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Got it!',
           customClass: { container: 'swal-z-index' },
         });
       } else {
@@ -451,13 +461,15 @@ export default function AddRole() {
                 </div>
 
                 <div className="lg:col-span-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" name="name" value={driverData.address} onChange={(e) => handleDriverInputChange({ target: { name: 'address', value: e.target.value } } as any)} placeholder="Enter complete address" />
+                  <Label htmlFor="address">Address *</Label>
+                  <Input id="address" name="name" value={driverData.address} onChange={(e) => handleDriverInputChange({ target: { name: 'address', value: e.target.value } } as any)} placeholder="Enter complete address" status={errors.address ? "error" : ""} />
+                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                  <Input id="emergencyContact" name="name" value={driverData.emergencyContact} onChange={(e) => handleDriverInputChange({ target: { name: 'emergencyContact', value: e.target.value } } as any)} placeholder="+1 (555) 987-6543" />
+                  <Label htmlFor="emergencyContact">Emergency Contact *</Label>
+                  <Input id="emergencyContact" name="name" value={driverData.emergencyContact} onChange={(e) => handleDriverInputChange({ target: { name: 'emergencyContact', value: e.target.value } } as any)} placeholder="+1 (555) 987-6543" status={errors.emergencyContact ? "error" : ""} />
+                  {errors.emergencyContact && <p className="mt-1 text-sm text-red-500">{errors.emergencyContact}</p>}
                 </div>
 
                 <div>
@@ -475,12 +487,8 @@ export default function AddRole() {
                   <Input type="date" id="driverAbstractExpiry" name="name" value={driverData.driverAbstractExpiry} onChange={(e) => handleDriverInputChange({ target: { name: 'driverAbstractExpiry', value: e.target.value } } as any)} />
                 </div>
 
-                <div className="lg:col-span-2">
-                  <Label htmlFor="driverAbstract">Driver Abstract</Label>
-                  <Input id="driverAbstract" name="name" value={driverData.driverAbstract} onChange={(e) => handleDriverInputChange({ target: { name: 'driverAbstract', value: e.target.value } } as any)} placeholder="Enter driver abstract" />
-                </div>
+              
 
-                {/* Driver Abstract File */}
                 <div className="lg:col-span-2">
                   <Label>Driver Abstract File</Label>
                   <div className="flex items-center gap-4">
@@ -680,9 +688,8 @@ export default function AddRole() {
                 </div>
 
                 <div>
-                  <Label htmlFor="countryIssue">Country Issue *</Label>
-                  <Input id="countryIssue" name="name" value={supplierData.countryIssue} onChange={(e) => handleSupplierInputChange({ target: { name: 'countryIssue', value: e.target.value } } as any)} placeholder="Enter country of issue" status={errors.countryIssue ? "error" : ""} />
-                  {errors.countryIssue && <p className="mt-1 text-sm text-red-500">{errors.countryIssue}</p>}
+                  <Label htmlFor="countryIssue">Country Issue</Label>
+                  <Input id="countryIssue" name="name" value={supplierData.countryIssue} onChange={(e) => handleSupplierInputChange({ target: { name: 'countryIssue', value: e.target.value } } as any)} placeholder="Enter country of issue" />
                 </div>
 
                 <div>
@@ -708,16 +715,15 @@ export default function AddRole() {
                 </div>
 
                 <div>
-                  <Label htmlFor="bankDetailIssueNo">Bank Detail Issue No *</Label>
-                  <Input id="bankDetailIssueNo" name="name" value={supplierData.bankDetailIssueNo} onChange={(e) => handleSupplierInputChange({ target: { name: 'bankDetailIssueNo', value: e.target.value } } as any)} placeholder="Enter bank detail issue number" status={errors.bankDetailIssueNo ? "error" : ""} />
-                  {errors.bankDetailIssueNo && <p className="mt-1 text-sm text-red-500">{errors.bankDetailIssueNo}</p>}
+                  <Label htmlFor="bankDetailIssueNo">Bank Detail Issue No</Label>
+                  <Input id="bankDetailIssueNo" name="name" value={supplierData.bankDetailIssueNo} onChange={(e) => handleSupplierInputChange({ target: { name: 'bankDetailIssueNo', value: e.target.value } } as any)} placeholder="Enter bank detail issue number" />
                 </div>
 
                 {/* Registration Document */}
                 <div className="lg:col-span-2">
-                  <Label>Registration Document *</Label>
+                  <Label>Registration Document</Label>
                   <div className="flex items-center gap-4">
-                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleDocumentChange("registrationDocument")} className="hidden" id="registration-document" required />
+                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleDocumentChange("registrationDocument")} className="hidden" id="registration-document" />
                     <label htmlFor="registration-document" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                       <div className="text-center">
                         <FileIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />

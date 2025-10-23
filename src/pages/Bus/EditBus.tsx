@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
 import { Input } from 'antd';
 import Swal from 'sweetalert2';
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
@@ -8,23 +9,14 @@ import Label from "../../components/form/Label";
 import Select from "../../components/form/Select";
 import { PlusIcon } from "../../icons";
 
-export default function AddBus() {
-  const [formData, setFormData] = useState({
-    busNumber: "",
-    model: "",
-    manufacturer: "",
-    year: "",
-    capacity: "",
-    fuelType: "",
-    regExDate: "",
-    insuranceNo: "",
-    insuranceCompany: "",
-    exDate: "",
-    vinNo: "",
-    image: null as File | null,
-    busServiceDate: "",
-    nextServiceDate: "",
-    kmOnServiceDate: "",
+export default function EditBus() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<any>({
+    busNumber: "", model: "", manufacturer: "", year: "", capacity: "",
+    fuelType: "", regExDate: "", insuranceNo: "", insuranceCompany: "",
+    exDate: "", vinNo: "", image: null, busServiceDate: "",
+    nextServiceDate: "", kmOnServiceDate: "",
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -40,19 +32,45 @@ export default function AddBus() {
     { value: "Hybrid", label: "Hybrid" },
   ];
 
+  useEffect(() => {
+    fetchBusData();
+  }, [id]);
+
+  const fetchBusData = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/bus/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(data);
+        setStatus(data.status || 'active');
+        if (data.image) {
+          setImagePreview(`http://localhost:5000/uploads/${data.image}`);
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load bus data',
+        confirmButtonColor: '#3085d6',
+        customClass: { container: 'swal-z-index' },
+      });
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const handleSelectChange = (value: string) => {
-    setFormData(prev => ({ ...prev, fuelType: value }));
+    setFormData((prev: any) => ({ ...prev, fuelType: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData(prev => ({ ...prev, image: file }));
+      setFormData((prev: any) => ({ ...prev, image: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -96,8 +114,8 @@ export default function AddBus() {
     
     setLoading(true);
     Swal.fire({
-      title: 'Registering...',
-      text: 'Please wait while we register the bus',
+      title: 'Updating...',
+      text: 'Please wait while we update the bus',
       allowOutsideClick: false,
       didOpen: () => { Swal.showLoading(); },
       customClass: { container: 'swal-z-index' },
@@ -106,40 +124,32 @@ export default function AddBus() {
     try {
       const formDataToSend = new FormData();
       const busData = { ...formData, status };
-      delete (busData as any).image;
+      delete busData.image;
       
-      if (formData.image) formDataToSend.append('image', formData.image);
+      if (formData.image instanceof File) formDataToSend.append('image', formData.image);
       formDataToSend.append('data', JSON.stringify(busData));
       
-      const response = await fetch('http://localhost:5000/api/bus/add', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:5000/api/bus/${id}`, {
+        method: 'PUT',
         body: formDataToSend,
       });
       
       if (response.ok) {
-        setFormData({
-          busNumber: "", model: "", manufacturer: "", year: "", capacity: "",
-          fuelType: "", regExDate: "", insuranceNo: "", insuranceCompany: "",
-          exDate: "", vinNo: "", image: null, busServiceDate: "",
-          nextServiceDate: "", kmOnServiceDate: "",
-        });
-        setImagePreview(null);
-        setStatus('active');
-        setErrors({});
-        
         Swal.fire({
           icon: 'success',
-          title: 'Registration Successful!',
-          text: 'Bus has been registered successfully',
+          title: 'Update Successful!',
+          text: 'Bus has been updated successfully',
           confirmButtonColor: '#3085d6',
           customClass: { container: 'swal-z-index' },
+        }).then(() => {
+          navigate('/admin/view-buses');
         });
       } else {
         const errorData = await response.json();
         Swal.fire({
           icon: 'error',
-          title: 'Registration Failed',
-          text: errorData.message || 'Failed to register bus',
+          title: 'Update Failed',
+          text: errorData.message || 'Failed to update bus',
           confirmButtonColor: '#3085d6',
           customClass: { container: 'swal-z-index' },
         });
@@ -159,10 +169,10 @@ export default function AddBus() {
 
   return (
     <div>
-      <PageMeta title="Add Bus | Get Your Guide Admin" description="Register new bus to the fleet" />
-      <PageBreadcrumb pageTitle="Add Bus" />
+      <PageMeta title="Edit Bus | Get Your Guide Admin" description="Edit bus information" />
+      <PageBreadcrumb pageTitle="Edit Bus" />
       
-      <ComponentCard title="Bus Registration">
+      <ComponentCard title="Update Bus Information">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="lg:col-span-2">
@@ -182,7 +192,7 @@ export default function AddBus() {
                 <div>
                   <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="bus-image" />
                   <label htmlFor="bus-image" className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-                    Choose Photo
+                    Change Photo
                   </label>
                   <p className="mt-1 text-xs text-gray-500">JPG, PNG up to 5MB</p>
                 </div>
@@ -191,67 +201,67 @@ export default function AddBus() {
 
             <div>
               <Label htmlFor="busNumber">Bus Number *</Label>
-              <Input id="busNumber" name="busNumber" value={formData.busNumber} onChange={handleInputChange} placeholder="BUS-001" status={errors.busNumber ? "error" : ""} />
+              <Input id="busNumber" name="busNumber" value={formData.busNumber || ''} onChange={handleInputChange} placeholder="BUS-001" status={errors.busNumber ? "error" : ""} />
               {errors.busNumber && <p className="mt-1 text-sm text-red-500">{errors.busNumber}</p>}
             </div>
 
             <div>
               <Label htmlFor="manufacturer">Manufacturer *</Label>
-              <Input id="manufacturer" name="manufacturer" value={formData.manufacturer} onChange={handleInputChange} placeholder="Tata Motors" status={errors.manufacturer ? "error" : ""} />
+              <Input id="manufacturer" name="manufacturer" value={formData.manufacturer || ''} onChange={handleInputChange} placeholder="Tata Motors" status={errors.manufacturer ? "error" : ""} />
               {errors.manufacturer && <p className="mt-1 text-sm text-red-500">{errors.manufacturer}</p>}
             </div>
 
             <div>
               <Label htmlFor="model">Model *</Label>
-              <Input id="model" name="model" value={formData.model} onChange={handleInputChange} placeholder="Starbus Ultra" status={errors.model ? "error" : ""} />
+              <Input id="model" name="model" value={formData.model || ''} onChange={handleInputChange} placeholder="Starbus Ultra" status={errors.model ? "error" : ""} />
               {errors.model && <p className="mt-1 text-sm text-red-500">{errors.model}</p>}
             </div>
 
             <div>
               <Label htmlFor="year">Manufacturing Year *</Label>
-              <Input type="number" id="year" name="year" value={formData.year} onChange={handleInputChange} placeholder="2023" min="1990" max="2024" status={errors.year ? "error" : ""} />
+              <Input type="number" id="year" name="year" value={formData.year || ''} onChange={handleInputChange} placeholder="2023" min="1990" max="2024" status={errors.year ? "error" : ""} />
               {errors.year && <p className="mt-1 text-sm text-red-500">{errors.year}</p>}
             </div>
 
             <div>
               <Label htmlFor="capacity">Seating Capacity *</Label>
-              <Input type="number" id="capacity" name="capacity" value={formData.capacity} onChange={handleInputChange} placeholder="45" min="1" status={errors.capacity ? "error" : ""} />
+              <Input type="number" id="capacity" name="capacity" value={formData.capacity || ''} onChange={handleInputChange} placeholder="45" min="1" status={errors.capacity ? "error" : ""} />
               {errors.capacity && <p className="mt-1 text-sm text-red-500">{errors.capacity}</p>}
             </div>
 
             <div>
               <Label>Fuel Type *</Label>
-              <Select options={fuelTypeOptions} placeholder="Select fuel type" onChange={handleSelectChange} className="dark:bg-gray-900" />
+              <Select options={fuelTypeOptions} placeholder="Select fuel type" value={formData.fuelType} onChange={handleSelectChange} className="dark:bg-gray-900" />
               {errors.fuelType && <p className="mt-1 text-sm text-red-500">{errors.fuelType}</p>}
             </div>
 
             <div>
               <Label htmlFor="regExDate">Reg. Ex. Date *</Label>
-              <Input type="date" id="regExDate" name="regExDate" value={formData.regExDate} onChange={handleInputChange} status={errors.regExDate ? "error" : ""} />
+              <Input type="date" id="regExDate" name="regExDate" value={formData.regExDate || ''} onChange={handleInputChange} status={errors.regExDate ? "error" : ""} />
               {errors.regExDate && <p className="mt-1 text-sm text-red-500">{errors.regExDate}</p>}
             </div>
 
             <div>
               <Label htmlFor="insuranceNo">Insurance No *</Label>
-              <Input id="insuranceNo" name="insuranceNo" value={formData.insuranceNo} onChange={handleInputChange} placeholder="Enter insurance number" status={errors.insuranceNo ? "error" : ""} />
+              <Input id="insuranceNo" name="insuranceNo" value={formData.insuranceNo || ''} onChange={handleInputChange} placeholder="Enter insurance number" status={errors.insuranceNo ? "error" : ""} />
               {errors.insuranceNo && <p className="mt-1 text-sm text-red-500">{errors.insuranceNo}</p>}
             </div>
 
             <div>
               <Label htmlFor="insuranceCompany">Insurance Company *</Label>
-              <Input id="insuranceCompany" name="insuranceCompany" value={formData.insuranceCompany} onChange={handleInputChange} placeholder="Enter insurance company" status={errors.insuranceCompany ? "error" : ""} />
+              <Input id="insuranceCompany" name="insuranceCompany" value={formData.insuranceCompany || ''} onChange={handleInputChange} placeholder="Enter insurance company" status={errors.insuranceCompany ? "error" : ""} />
               {errors.insuranceCompany && <p className="mt-1 text-sm text-red-500">{errors.insuranceCompany}</p>}
             </div>
 
             <div>
               <Label htmlFor="exDate">Ex. Date *</Label>
-              <Input type="date" id="exDate" name="exDate" value={formData.exDate} onChange={handleInputChange} status={errors.exDate ? "error" : ""} />
+              <Input type="date" id="exDate" name="exDate" value={formData.exDate || ''} onChange={handleInputChange} status={errors.exDate ? "error" : ""} />
               {errors.exDate && <p className="mt-1 text-sm text-red-500">{errors.exDate}</p>}
             </div>
 
             <div>
               <Label htmlFor="vinNo">VIN No *</Label>
-              <Input id="vinNo" name="vinNo" value={formData.vinNo} onChange={handleInputChange} placeholder="Enter VIN number" status={errors.vinNo ? "error" : ""} />
+              <Input id="vinNo" name="vinNo" value={formData.vinNo || ''} onChange={handleInputChange} placeholder="Enter VIN number" status={errors.vinNo ? "error" : ""} />
               {errors.vinNo && <p className="mt-1 text-sm text-red-500">{errors.vinNo}</p>}
             </div>
           </div>
@@ -262,17 +272,17 @@ export default function AddBus() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div>
                 <Label htmlFor="busServiceDate">Bus Service Date</Label>
-                <Input type="date" id="busServiceDate" name="busServiceDate" value={formData.busServiceDate} onChange={handleInputChange} />
+                <Input type="date" id="busServiceDate" name="busServiceDate" value={formData.busServiceDate || ''} onChange={handleInputChange} />
               </div>
 
               <div>
                 <Label htmlFor="nextServiceDate">Next Service Date</Label>
-                <Input type="date" id="nextServiceDate" name="nextServiceDate" value={formData.nextServiceDate} onChange={handleInputChange} />
+                <Input type="date" id="nextServiceDate" name="nextServiceDate" value={formData.nextServiceDate || ''} onChange={handleInputChange} />
               </div>
 
               <div>
                 <Label htmlFor="kmOnServiceDate">Km on Service Date</Label>
-                <Input type="number" id="kmOnServiceDate" name="kmOnServiceDate" value={formData.kmOnServiceDate} onChange={handleInputChange} placeholder="Enter kilometers" min="0" />
+                <Input type="number" id="kmOnServiceDate" name="kmOnServiceDate" value={formData.kmOnServiceDate || ''} onChange={handleInputChange} placeholder="Enter kilometers" min="0" />
               </div>
             </div>
           </div>
@@ -281,22 +291,22 @@ export default function AddBus() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Status</h3>
             <div className="flex gap-6">
               <label className="flex items-center space-x-3 cursor-pointer">
-                <input type="radio" value="active" checked={status === 'active'} onChange={(e) => setStatus(e.target.value)} className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
+                <input type="radio" value="active" checked={status === 'active'} onChange={(e) => setStatus(e.target.value)} className="w-4 h-4 text-green-600" />
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-300">Active</span>
               </label>
               <label className="flex items-center space-x-3 cursor-pointer">
-                <input type="radio" value="inactive" checked={status === 'inactive'} onChange={(e) => setStatus(e.target.value)} className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500" />
+                <input type="radio" value="inactive" checked={status === 'inactive'} onChange={(e) => setStatus(e.target.value)} className="w-4 h-4 text-red-600" />
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-300">Inactive</span>
               </label>
             </div>
           </div>
 
           <div className="flex justify-end gap-4 pt-6">
-            <button type="button" className="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button type="button" onClick={() => navigate('/admin/view-buses')} className="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
               Cancel
             </button>
             <button type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium">
-              {loading ? 'Registering...' : 'Register Bus'}
+              {loading ? 'Updating...' : 'Update Bus'}
             </button>
           </div>
         </form>

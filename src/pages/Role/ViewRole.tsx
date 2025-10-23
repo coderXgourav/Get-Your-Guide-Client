@@ -87,7 +87,7 @@ export default function ViewRole() {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/role/edit/${id}`);
+    navigate(`/admin/role/edit/${id}`);
   };
 
   const handleStatusChange = async (id: string, currentStatus: string) => {

@@ -1,6 +1,7 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { CalenderIcon, UserCircleIcon, BoxIcon, GroupIcon, DollarLineIcon, ArrowUpIcon, ArrowDownIcon } from "../../icons";
+import { useAuth } from "../../context/AuthContext";
 
 interface StatCard {
   title: string;
@@ -9,6 +10,7 @@ interface StatCard {
   changeType: 'increase' | 'decrease';
   icon: React.ReactNode;
   color: string;
+  permission?: string;
 }
 
 interface RecentActivity {
@@ -20,14 +22,17 @@ interface RecentActivity {
 }
 
 export default function Home() {
-  const stats: StatCard[] = [
+  const { hasPermission } = useAuth();
+  
+  const allStats: StatCard[] = [
     {
       title: "Total Tours",
       value: "156",
       change: "+12%",
       changeType: "increase",
       icon: <CalenderIcon className="w-6 h-6" />,
-      color: "bg-blue-500"
+      color: "bg-blue-500",
+      permission: "TOUR_MANAGE"
     },
     {
       title: "Active Drivers",
@@ -35,7 +40,8 @@ export default function Home() {
       change: "+5%",
       changeType: "increase",
       icon: <UserCircleIcon className="w-6 h-6" />,
-      color: "bg-green-500"
+      color: "bg-green-500",
+      permission: "ROLE_MANAGE"
     },
     {
       title: "Fleet Buses",
@@ -43,7 +49,8 @@ export default function Home() {
       change: "+2%",
       changeType: "increase",
       icon: <BoxIcon className="w-6 h-6" />,
-      color: "bg-purple-500"
+      color: "bg-purple-500",
+      permission: "BUS_MANAGE"
     },
     {
       title: "Suppliers",
@@ -51,7 +58,8 @@ export default function Home() {
       change: "-3%",
       changeType: "decrease",
       icon: <GroupIcon className="w-6 h-6" />,
-      color: "bg-orange-500"
+      color: "bg-orange-500",
+      permission: "ROLE_MANAGE"
     },
     {
       title: "Monthly Revenue",
@@ -59,7 +67,8 @@ export default function Home() {
       change: "+18%",
       changeType: "increase",
       icon: <DollarLineIcon className="w-6 h-6" />,
-      color: "bg-emerald-500"
+      color: "bg-emerald-500",
+      permission: "FINANCE"
     },
     {
       title: "Total Bookings",
@@ -67,9 +76,12 @@ export default function Home() {
       change: "+25%",
       changeType: "increase",
       icon: <CalenderIcon className="w-6 h-6" />,
-      color: "bg-indigo-500"
+      color: "bg-indigo-500",
+      permission: "TOUR_MANAGE"
     }
   ];
+  
+  const stats = allStats.filter(stat => !stat.permission || hasPermission(stat.permission));
 
   const recentActivities: RecentActivity[] = [
     { id: 1, type: 'tour', title: 'New tour "City Walking Experience" created', time: '2 hours ago', status: 'Draft' },
@@ -110,6 +122,7 @@ export default function Home() {
       </div>
 
       {/* Stats Cards */}
+      {stats.length > 0 && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -138,9 +151,11 @@ export default function Home() {
           </div>
         ))}
       </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tours by Status */}
+        {hasPermission('TOUR_MANAGE') && (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tours by Status</h3>
           <div className="space-y-4">
@@ -160,8 +175,10 @@ export default function Home() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Monthly Bookings Chart */}
+        {hasPermission('TOUR_MANAGE') && (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Bookings</h3>
           <div className="space-y-3">
@@ -181,8 +198,10 @@ export default function Home() {
             ))}
           </div>
         </div>
+        )}
       </div>
 
+      {(hasPermission('TOUR_MANAGE') || hasPermission('ROLE_MANAGE')) && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activities */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
@@ -219,33 +238,42 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
           <div className="space-y-3">
+            {hasPermission('TOUR_MANAGE') && (
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <div className="flex items-center">
                 <CalenderIcon className="w-5 h-5 text-blue-500 mr-3" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">Add New Tour</span>
               </div>
             </button>
+            )}
+            {hasPermission('ROLE_MANAGE') && (
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <div className="flex items-center">
                 <UserCircleIcon className="w-5 h-5 text-green-500 mr-3" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">Register Driver</span>
               </div>
             </button>
+            )}
+            {hasPermission('BUS_MANAGE') && (
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <div className="flex items-center">
                 <BoxIcon className="w-5 h-5 text-purple-500 mr-3" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">Add New Bus</span>
               </div>
             </button>
+            )}
+            {hasPermission('ROLE_MANAGE') && (
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <div className="flex items-center">
                 <GroupIcon className="w-5 h-5 text-orange-500 mr-3" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">Add Supplier</span>
               </div>
             </button>
+            )}
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
